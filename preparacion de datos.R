@@ -1,15 +1,4 @@
-###BIOCONDUCTOR 
-
-source("http://www.bioconductor.org/biocLite.R")
-
-biocLite()
-biocValid()
-
-#https://www.bioconductor.org/packages/devel/bioc/vignettes/topGO/inst/doc/topGO.pdf
-
-source("http://bioconductor.org/biocLite.R")
-biocLite("topGO")
-
+### Preparacion de datos
 
 # El punto de partida es una lista de genes y sus p-valores de expresion diferencial (si es la intencion ver expresion diferencial) 
 
@@ -100,3 +89,94 @@ volcano + geom_point()
 
 
 write.table(pten1, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/all_genes_and_pvalues_pten.txt", sep="\t")
+
+
+### Filtrar por p valor significativo (Menor a 0.05)  
+
+source(	broom_0.5.0.tar.gzm)
+
+install.packages("broom")
+
+library(broom)
+
+# Now add row names as colum
+
+library(tibble)
+pten1<- rownames_to_column(pten1, var = "Genes")
+head(pten1)
+View(pten1)
+
+
+##Filtrar genes segun tengan p-valor significativo; menor que 0.05
+
+seleccion_pten_pvalor1<- as.data.frame(pten1$Genes[pten1$pvalue < 0.05])
+seleccion_pten_pvalor2<- as.data.frame(pten1$pvalue[pten1$pvalue < 0.05])
+seleccion_pten_pvalor3<- as.data.frame(pten1$foldchange[pten1$pvalue < 0.05])
+
+head(seleccion_pten_pvalor3)
+View(seleccion_pten_pvalor3)
+
+class(seleccion_pten_pvalor1)
+
+#crear nuevo Data.frame con valores filtrados 
+
+filtrado_por_pvalue<- data.frame(seleccion_pten_pvalor1,seleccion_pten_pvalor2, seleccion_pten_pvalor3)
+head(filtrado_por_pvalue)
+View(filtrado_por_pvalue)
+
+colnames(filtrado_por_pvalue) <- c("Genes", "pvalue", "foldchange")
+
+write.table(filtrado_por_pvalue, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/Pten_filtrado_por_pval_signif.txt", sep="\t")
+
+
+
+## Clasificar por fold change, segun sea positivo (Up regulated) o negativo (Down regulated)
+# Explicacion del valor de corte del fold change (+0.5849 para Up y - 0.5849)  https://www.biostars.org/p/101727/
+
+#positivo "Up_regulated"
+
+seleccion_pten_foldchange1<- as.data.frame(filtrado_por_pvalue$Genes[filtrado_por_pvalue$foldchange> 0.5849])
+seleccion_pten_foldchange2<- as.data.frame(filtrado_por_pvalue$pvalue[filtrado_por_pvalue$foldchange > 0.5849])
+seleccion_pten_foldchange3<- as.data.frame(filtrado_por_pvalue$foldchange[filtrado_por_pvalue$foldchange > 0.58498])
+
+
+head(seleccion_pten_foldchange3)
+View(seleccion_pten_foldchange2)
+
+Up_regulated<- data.frame(seleccion_pten_foldchange1,seleccion_pten_foldchange2, seleccion_pten_foldchange3)
+colnames(Up_regulated) <- c("Genes", "pvalue", "foldchange")
+
+head(Up_regulated)
+View(Up_regulated)
+
+
+##crear un archivo de texto separado por tab con el data frame de los genes upregulated
+
+write.table(Up_regulated, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/Up_regulated_pten.txt", sep="\t")
+
+
+
+
+
+##negativo "Down_regulated"
+
+seleccion_pten_foldchange4<- as.data.frame(filtrado_por_pvalue$Genes[filtrado_por_pvalue$foldchange < -0.5849])
+seleccion_pten_foldchange5<- as.data.frame(filtrado_por_pvalue$pvalue[filtrado_por_pvalue$foldchange < -0.5849])
+seleccion_pten_foldchange6<- as.data.frame(filtrado_por_pvalue$foldchange[filtrado_por_pvalue$foldchange < -0.58498])
+
+
+head(seleccion_pten_foldchange3)
+View(seleccion_pten_foldchange2)
+
+Down_regulated<- data.frame(seleccion_pten_foldchange4,seleccion_pten_foldchange5, seleccion_pten_foldchange6)
+colnames(Down_regulated) <- c("Genes", "pvalue", "foldchange")
+head(Down_regulated)
+View(Down_regulated)
+
+
+#crear un archivo de texto de los genes downregulated
+
+write.table(Down_regulated, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/Down_regulated_pten.txt", sep="\t")
+
+
+
