@@ -37,7 +37,7 @@ colnames(pten)
 
 y <- t.test(pten[1,1:3], pten[1, 4:6])
 
-#Use the t-test function to calculate the difference per gene between the control and ko
+#Función "t-test" para calcular la diferencia por gen entre el wt(control) y ko
 
 ttestPten <- function(df, grp1, grp2) {
   x = df[grp1]
@@ -53,27 +53,26 @@ View (rawpvalue)
 
 hist(rawpvalue)
 
+#Log2 de los datos, calcular la media de cada gen por grupo. 
+#Luego calcular el fold change entre los grupos (control versus dieta cetogénica). 
 
-# Log2 the data, calculate the mean for each gene per group. 
-#Then calculate the fold change between the groups 
-#(control vs. ketogenic diet). hint: log2(ratio)
 
-##transform our data into log2 base.
+##log2.
 pten1 = log2(pten)
 
-#calculate the mean of each gene per control group
+#Media del control (wt)
 control = apply(pten1[,1:3], 1, mean)
 
-#calcuate the mean of each gene per test group
+#Media del tratamiento (ko)
 test = apply(pten1[, 4:6], 1, mean) 
 
-#confirming that we have a vector of numbers
+#confirmar que tenemos un vector de numeros
 class(control) 
-
-#confirming we have a vector of numbers
 class(test)
 
-#because our data is already log2 transformed, we can take the difference between the means.  And this is our log2 Fold Change or log2 Ratio == log2(control / test)
+#Nuestros datos ya están transformados en log2; podemos calcular la diferencia entre las medias. 
+#Este es nuestro log2 Fold Change o log2 Ratio == log2 (control / test)
+
 foldchange <- control - test 
 
 hist(foldchange, xlab = "log2 Fold Change (Control vs Test)")
