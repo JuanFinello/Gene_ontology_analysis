@@ -1,3 +1,6 @@
+
+
+
 ### PREPARACIÓN DE DATOS PARA ANALISIS GO
 
 # Para el analisis GO, El punto de partida es una lista de genes y sus p-valores de 
@@ -194,6 +197,138 @@ View(Down_regulated)
 #crear un archivo de texto de los genes downregulated
 
 write.table(Down_regulated, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/Down_regulated_pten.txt", sep="\t")
+
+
+### Sinonimos 
+
+# El microarray que se utilizo para el estudio tiene una version desactualizada de la anotacion de los
+# genes de P. patens (V3).
+# A continuación, utilizando la herramienta Biomart the Phitozome, se buscaron los sinonimos de los genes del micoarray
+# en la nueva anotación (V6).
+
+# Un vez que tengo el data frame del nombre original con el sinonimo
+# tengo que meter el sinonmo en el data.frame de los genes up o down reg con pvalor y fold change.
+
+
+## Sinonimos de los genes Up regulated
+
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/")
+
+up = read.table("Up_regulated_pten.txt", sep = "\t", header = T)
+View(up)
+
+#hay que cambiar la clase de las columnas, de factores a caracteres 
+
+up <- data.frame(lapply(up, as.character), stringsAsFactors=FALSE)
+colnames(up)<- c("Gene.Name", "Pvalue", "Foldchange")
+str(up)
+head(up)
+
+#sinonimos 
+
+getwd()
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/")
+Up_sinonimos = read.table("Up_regulated_pten_sinonimos.txt", sep = "\t", header = T)
+
+Up_sinonimos <- data.frame(lapply(Up_sinonimos, as.character), stringsAsFactors=FALSE)
+
+str(Up_sinonimos)
+
+#Eliminar duplicados
+
+which(duplicated(Up_sinonimos))
+Up_sinonimos1 <- Up_sinonimos[!duplicated(Up_sinonimos),]
+
+View(Up_sinonimos1)
+str(Up_sinonimos1)
+
+write.table(Up_sinonimos1, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/archivos definitivos/unique/Up_regulated_pten_sinonimos_uinique.txt", sep="\t")
+
+
+##Fusionar la nueva anotacion con la anterior y los pvalores y foldchange 
+#You can also specify the "by" argument, to force the join using a single or few variables  
+
+
+GenID_sinonimos= merge(up, Up_sinonimos1, by= "Gene.Name")
+View(GenID_sinonimos)
+
+
+# Como el recientemente secuenciado genoma de P. patens no cuenta con 
+# anotaciones para hacer un analisis de Gene Ontology, 
+# Utilizando Biomart de Phytozome, se buscaron los ortologos para los genes de P. patens V6
+# en el genoma de Arabidopsis thaliana, con el objetivo de pode hacer el analisis de GO. 
+
+#Ortologos de upregulated 
+
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/")
+ortologos_upregulated = read.table("ortologos_de_upregulated.txt", sep = "\t", header = T)
+ortologos_upregulated <- data.frame(lapply(ortologos_upregulated, as.character), stringsAsFactors=FALSE)
+View(ortologos_upregulated)
+str(ortologos_upregulated)
+
+# Ahora en el data frame donde estan los p valores, fold change y sinonimos
+# filtrar por los sinonimos para meter los ortologos 
+
+ortologos_upregulated_final= merge(GenID_sinonimos, ortologos_upregulated, by.x= "Synonyms", by.y = "Sinonimo")
+View(ortologos_upregulated_final)
+
+write.table(ortologos_upregulated_final, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/ortologos_upregulated_final.txt", sep="\t")
+
+
+
+
+
+
+
+# Sinonimos down regulated
+
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/")
+
+down =read.table("Down_regulated.txt", sep = "\t", header = T)
+
+#hay que cambiar la clase de las columnas, de factores a caracteres 
+
+down <- data.frame(lapply(down, as.character), stringsAsFactors=FALSE)
+
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/cambio de nomenclatura/")
+
+down_sinonimos = read.table("Down_regulated_sinonimos.txt", sep = "\t", header = T)
+down_sinonimos <- data.frame(lapply(down_sinonimos, as.character), stringsAsFactors=FALSE)
+View(down_sinonimos)
+str(down_sinonimos)
+
+#Eliminar duplicados
+
+which(duplicated(down_sinonimos))
+down_sinonimos1 <- down_sinonimos[!duplicated(down_sinonimos),]
+View(down_sinonimos1)
+which(duplicated(down_sinonimos1))
+
+#You can also specify the "by" argument, to force the join using a single or few variables  
+#merge(dat1, dat2, by.x = "Gene_Id", by.y="Gene_Id")
+
+GenID_sinonimos_down= merge(down, down_sinonimos, by= "Gene_Name")
+View(GenID_sinonimos_down)
+
+write.table(GenID_sinonimos_down, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/GenID_Upregulated_sinonimos_down.txt", sep="\t")
+
+
+##Ortologos de down regulated 
+
+setwd("C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/")
+ortologos_downpregulated = read.table("ortologos_de_downpregulated.txt", sep = "\t", header = T)
+ortologos_downpregulated <- data.frame(lapply(ortologos_downpregulated, as.character), stringsAsFactors=FALSE)
+View(ortologos_downpregulated)
+str(ortologos_upregulated)
+
+#ahora filtrar el data frame donde estan los p valores y demas, por los sinonimos, 
+#metiendo asi los ortologos 
+
+ortologos_downregulated_final= merge(GenID_sinonimos_down, ortologos_downpregulated, by.x= "Sinonimo", by.y = "Sinonimos")
+View(ortologos_downregulated_final)
+
+write.table(ortologos_downregulated_final, "C:/Users/Admin/Desktop/tesina/bioinformatica microarreglo/ortologos_downregulated_final.txt", sep="\t")
+
 
 
 
