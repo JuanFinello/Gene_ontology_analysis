@@ -3,7 +3,7 @@
 # Para el analisis GO, El punto de partida es una lista de genes y sus p-valores de 
 # expresion diferencial (si es la intencion ver expresion diferencial) 
 # El resultado del microarray es una trabla con 32559 genes, 
-# y su valor de expresion en dos condiciones, wt y ko, control y tratamiento respectivamente 
+# y sus valores de expresion en dos condiciones, wt y ko, control y tratamiento respectivamente 
 # con tres repeticiones para cada caso.
 
 
