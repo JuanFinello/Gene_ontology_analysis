@@ -7,7 +7,7 @@ if(!requireNamespace("BiocManager"))
 BiocManager::install(c("topGO","ALL"))
 
 library(topGO)
-library(ALL)
+library(AnnotationDbi)
 data(ALL)
 
 
@@ -94,7 +94,7 @@ Gene_interes_down = read.table(
 
 View(Gene_interes_down)
 myInterestedGenes2 <- sample(Gene_interes_down$Ortholog.gene.name, 249)
-View(myInterestedGenes2)
+View(Gene_interes_down)
 
 
 #The geneList object is a named factor that indicates which genes are interesting and which not
@@ -153,13 +153,26 @@ updateR()
 
 GOdata_BP_all_up_pten <- new("topGOdata", 
                              ontology = "BP",
-                             allGenes = geneList_up_pten_all,
+                             allGenes = geneList_downreg_pten,
                              annot = annFUN.gene2GO, 
                              gene2GO = GOlist_BP)
 
-getClass(Class, where = topenv(parent.frame()))
 
-stop(gettextf("%s is not a defined class", dQuote(Class)), domain = NA)
+## Trabajar con el ObjetoGO
+library(topGO)
 
-
-
+ a <- genes(GOdata_BP_all_up_pten)
+ head(a)
+ 
+ numGenes(GOdata_BP_all_up_pten)
+ 
+ sg <- sigGenes(GOdata_BP_all_up_pten)
+ str(sg)
+ numSigGenes(GOdata_BP_all_up_pten)
+  
+ graph(GOdata_BP_all_up_pten)
+ 
+ termStat(GOdata_BP_all_up_pten)
+ 
+ 
+ 
