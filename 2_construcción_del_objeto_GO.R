@@ -159,7 +159,6 @@ GOdata_BP_all_up_pten <- new("topGOdata",
 
 
 ## Trabajar con el ObjetoGO
-library(topGO)
 
  a <- genes(GOdata_BP_all_up_pten)
  head(a)
