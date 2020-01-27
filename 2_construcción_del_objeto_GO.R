@@ -151,7 +151,7 @@ updateR()
 # Para construir el onjeto topGOdata la lista d egenes interesante, la ontologia de interes, y las anotaciones GO  
 
 
-GOdata_BP_all_up_pten <- new("topGOdata", 
+GOdata_BP_all_down_pten <- new("topGOdata", 
                              ontology = "BP",
                              allGenes = geneList_downreg_pten,
                              annot = annFUN.gene2GO, 
@@ -161,18 +161,18 @@ GOdata_BP_all_up_pten <- new("topGOdata",
 ## Trabajar con el ObjetoGO
 library(topGO)
 
- a <- genes(GOdata_BP_all_up_pten)
+ a <- genes(GOdata_BP_all_down_pten)
  head(a)
  
- numGenes(GOdata_BP_all_up_pten)
+ numGenes(GOdata_BP_all_down_pten)
  
- sg <- sigGenes(GOdata_BP_all_up_pten)
+ sg <- sigGenes(GOdata_BP_all_down_pten)
  str(sg)
- numSigGenes(GOdata_BP_all_up_pten)
+ numSigGenes(GOdata_BP_all_down_pten)
   
- graph(GOdata_BP_all_up_pten)
+ graph(GOdata_BP_all_down_pten)
  
- termStat(GOdata_BP_all_up_pten)
+ termStat(GOdata_BP_all_down_pten)
  
  
  
